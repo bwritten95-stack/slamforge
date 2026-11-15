@@ -22,6 +22,8 @@ var _alive: bool = true
 var _base_fov: float = 70.0
 var _forge_scene: PackedScene = preload("res://scenes/arena/forge_pad.tscn")
 var _was_on_floor: bool = true
+var _coyote: float = 0.0
+var _jump_buf: float = 0.0
 
 func _ready() -> void:
 	add_to_group("player")
@@ -75,8 +77,10 @@ func _physics_process(delta: float) -> void:
 	_pivot.rotation.x = deg_to_rad(_pitch)
 
 	if not is_on_floor():
+		_coyote = maxf(_coyote - delta, 0.0)
 		velocity.y -= _gravity * delta * (2.6 if _slamming else 1.0)
 	else:
+		_coyote = 0.12
 		if _slamming:
 			_impact_slam()
 		elif not _was_on_floor:
@@ -85,6 +89,9 @@ func _physics_process(delta: float) -> void:
 			_airborne_since_slam = false
 
 	_was_on_floor = is_on_floor()
+	_jump_buf = maxf(_jump_buf - delta, 0.0)
+	if Input.is_action_just_pressed("jump"):
+		_jump_buf = 0.12
 
 	var input_dir := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
 	var basis_y := Basis.from_euler(Vector3(0.0, _yaw, 0.0))
@@ -98,7 +105,9 @@ func _physics_process(delta: float) -> void:
 		velocity.x = lerpf(velocity.x, 0.0, 0.18)
 		velocity.z = lerpf(velocity.z, 0.0, 0.18)
 
-	if Input.is_action_just_pressed("jump") and is_on_floor():
+	if _jump_buf > 0.0 and _coyote > 0.0 and not _slamming:
+		_jump_buf = 0.0
+		_coyote = 0.0
 		velocity.y = JUMP_VELOCITY
 		AudioService.play_jump()
 

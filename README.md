@@ -1,8 +1,9 @@
 # SLAMFORGE
 
-**3D third-person forge climber.** Slam to forge glowing platforms under you, chain aerial slams for height combos, and beat the rising magma to the summit beacon.
+**3D third-person forge climber.** Slam to forge glowing platforms under you, chain aerial slams for height combos, dodge spinning hazard blades, and beat the rising magma to the summit beacon.
 
-Godot **4.7.2** · typed GDScript · procedural meshes
+Godot **4.7.2** · typed GDScript · procedural meshes  
+Repo: https://github.com/bwritten95-stack/slamforge
 
 ## Hook
 Every slam is **attack + level geometry**. Miss the rhythm and the melt eats you.
@@ -17,7 +18,7 @@ Every slam is **attack + level geometry**. Miss the rhythm and the melt eats you
 | Pause | Esc |
 
 ## Loop
-Menu → climb tower (forge pads + ring ledges) → summit beacon win **or** magma death → results
+Menu → climb tower (forge pads + ring ledges) → dodge hazard spinners → summit beacon win **or** magma/blade death → results
 
 ## Run
 ```bash
