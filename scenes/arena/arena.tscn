@@ -1,0 +1,195 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://scripts/arena/arena.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/ui/hud.gd" id="2"]
+[ext_resource type="Script" path="res://scripts/ui/pause_overlay.gd" id="3"]
+
+[sub_resource type="Environment" id="env"]
+background_mode = 1
+background_color = Color(0.035, 0.04, 0.07, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.35, 0.28, 0.32, 1)
+ambient_light_energy = 0.42
+tonemap_mode = 2
+glow_enabled = true
+glow_intensity = 0.55
+glow_bloom = 0.15
+fog_enabled = true
+fog_light_color = Color(0.35, 0.12, 0.08, 1)
+fog_density = 0.004
+fog_aerial_perspective = 0.2
+
+[sub_resource type="BoxMesh" id="start_mesh"]
+size = Vector3(10, 1, 10)
+
+[sub_resource type="BoxShape3D" id="start_shape"]
+size = Vector3(10, 1, 10)
+
+[sub_resource type="CylinderMesh" id="magma_mesh"]
+top_radius = 48.0
+bottom_radius = 48.0
+height = 1.2
+
+[sub_resource type="StandardMaterial3D" id="magma_mat"]
+albedo_color = Color(0.95, 0.22, 0.05, 1)
+emission_enabled = true
+emission = Color(1, 0.35, 0.05, 1)
+emission_energy_multiplier = 4.5
+
+[sub_resource type="SphereShape3D" id="beacon_shape"]
+radius = 1.6
+
+[node name="Arena" type="Node3D"]
+script = ExtResource("1")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("env")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.86, -0.35, 0.37, 0, 0.73, 0.68, -0.51, -0.59, 0.63, 0, 20, 0)
+shadow_enabled = true
+light_color = Color(1, 0.85, 0.7, 1)
+light_energy = 1.15
+
+[node name="World" type="Node3D" parent="."]
+
+[node name="StartPlatform" type="StaticBody3D" parent="World"]
+collision_layer = 1
+
+[node name="Mesh" type="MeshInstance3D" parent="World/StartPlatform"]
+mesh = SubResource("start_mesh")
+
+[node name="Col" type="CollisionShape3D" parent="World/StartPlatform"]
+shape = SubResource("start_shape")
+
+[node name="PlayerSpawn" type="Marker3D" parent="World"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+
+[node name="Forges" type="Node3D" parent="World"]
+
+[node name="Rings" type="Node3D" parent="World"]
+
+[node name="Magma" type="Node3D" parent="World"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -14, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="World/Magma"]
+mesh = SubResource("magma_mesh")
+surface_material_override/0 = SubResource("magma_mat")
+
+[node name="Beacon" type="Area3D" parent="World"]
+collision_layer = 0
+collision_mask = 2
+monitoring = true
+
+[node name="Mesh" type="MeshInstance3D" parent="World/Beacon"]
+[node name="Col" type="CollisionShape3D" parent="World/Beacon"]
+shape = SubResource("beacon_shape")
+
+[node name="HUD" type="CanvasLayer" parent="."]
+script = ExtResource("2")
+
+[node name="Root" type="Control" parent="HUD"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Top" type="HBoxContainer" parent="HUD/Root"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 16.0
+offset_top = 12.0
+offset_right = -16.0
+offset_bottom = 48.0
+theme_override_constants/separation = 20
+
+[node name="Score" type="Label" parent="HUD/Root/Top"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Score 0"
+
+[node name="Height" type="Label" parent="HUD/Root/Top"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+text = "Height"
+horizontal_alignment = 1
+
+[node name="Combo" type="Label" parent="HUD/Root/Top"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.75, 0.3, 1)
+theme_override_font_sizes/font_size = 18
+text = "Combo —"
+
+[node name="Magma" type="Label" parent="HUD/Root/Top"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.4, 0.25, 1)
+theme_override_font_sizes/font_size = 18
+text = "Magma"
+
+[node name="Banner" type="Label" parent="HUD/Root"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -280.0
+offset_top = -40.0
+offset_right = 280.0
+offset_bottom = 20.0
+theme_override_font_sizes/font_size = 28
+horizontal_alignment = 1
+
+[node name="Hint" type="Label" parent="HUD/Root"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = -34.0
+offset_right = -12.0
+offset_bottom = -8.0
+theme_override_colors/font_color = Color(0.85, 0.7, 0.55, 0.9)
+theme_override_font_sizes/font_size = 13
+horizontal_alignment = 1
+
+[node name="PauseOverlay" type="CanvasLayer" parent="."]
+visible = false
+script = ExtResource("3")
+
+[node name="Dim" type="ColorRect" parent="PauseOverlay"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.65)
+
+[node name="Root" type="CenterContainer" parent="PauseOverlay"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Panel" type="PanelContainer" parent="PauseOverlay/Root"]
+custom_minimum_size = Vector2(360, 280)
+layout_mode = 2
+
+[node name="VBox" type="VBoxContainer" parent="PauseOverlay/Root/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="PauseOverlay/Root/Panel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+text = "Paused"
+horizontal_alignment = 1
+
+[node name="Resume" type="Button" parent="PauseOverlay/Root/Panel/VBox"]
+layout_mode = 2
+text = "Resume"
+
+[node name="Menu" type="Button" parent="PauseOverlay/Root/Panel/VBox"]
+layout_mode = 2
+text = "Main Menu"
