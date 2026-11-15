@@ -180,6 +180,25 @@ func _spawn_slam_burst() -> void:
 	tw.tween_property(burst, "scale", Vector3(3.5, 0.4, 3.5), 0.28)
 	tw.parallel().tween_property(mat, "albedo_color:a", 0.0, 0.28)
 	tw.tween_callback(burst.queue_free)
+	for i in 6:
+		var spark := MeshInstance3D.new()
+		var sm := SphereMesh.new()
+		sm.radius = 0.08
+		sm.height = 0.16
+		spark.mesh = sm
+		var ang := TAU * float(i) / 6.0
+		spark.position = Vector3(cos(ang) * 0.3, 0.3, sin(ang) * 0.3)
+		var smat := StandardMaterial3D.new()
+		smat.albedo_color = Color(1.0, 0.7, 0.3, 1)
+		smat.emission_enabled = true
+		smat.emission = Color(1.0, 0.5, 0.1, 1)
+		smat.emission_energy_multiplier = 4.0
+		spark.material_override = smat
+		add_child(spark)
+		var stw := create_tween()
+		stw.tween_property(spark, "position", spark.position + Vector3(cos(ang) * 1.8, 0.8, sin(ang) * 1.8), 0.3)
+		stw.parallel().tween_property(spark, "scale", Vector3(0.05, 0.05, 0.05), 0.3)
+		stw.tween_callback(spark.queue_free)
 
 func _forge_pad(pos: Vector3, size: float) -> void:
 	var pad: Node3D = _forge_scene.instantiate() as Node3D

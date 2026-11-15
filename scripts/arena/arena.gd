@@ -178,6 +178,20 @@ func _spawn_hazard_rings() -> void:
 		spinner.name = "Hazard_%d" % i
 		spinner.position = Vector3(0.0, y, 0.0)
 		spinner.set_meta("spin", 0.7 + float(i) * 0.25)
+		# telegraph disc so blades read before they hit
+		var warn := MeshInstance3D.new()
+		var disc := TorusMesh.new()
+		disc.inner_radius = 2.6
+		disc.outer_radius = 3.0
+		warn.mesh = disc
+		var wmat := StandardMaterial3D.new()
+		wmat.albedo_color = Color(1.0, 0.2, 0.1, 0.55)
+		wmat.emission_enabled = true
+		wmat.emission = Color(1.0, 0.15, 0.05, 1)
+		wmat.emission_energy_multiplier = 2.0
+		wmat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		warn.material_override = wmat
+		spinner.add_child(warn)
 		for j in 2:
 			var blade := _make_box(Vector3(5.5, 0.25, 0.7), Color(0.85, 0.2, 0.15, 1), true)
 			blade.position = Vector3(cos(float(j) * PI) * 3.2, 0.0, sin(float(j) * PI) * 3.2)
