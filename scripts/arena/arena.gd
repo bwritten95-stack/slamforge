@@ -135,6 +135,36 @@ func _build_tower_rings() -> void:
 	summit.position = Vector3(0.0, RunState.summit_y, 0.0)
 	_rings.add_child(summit)
 	_beacon.global_position = Vector3(0.0, RunState.summit_y + 1.4, 0.0)
+	_spawn_hazard_rings()
+
+func _spawn_hazard_rings() -> void:
+	if "--ship-test" in OS.get_cmdline_user_args():
+		return
+	var spinner_script: Script = load("res://scripts/arena/hazard_spinner.gd") as Script
+	for i in 3:
+		var y := 10.0 + float(i) * 10.0
+		var spinner := Node3D.new()
+		spinner.set_script(spinner_script)
+		spinner.name = "Hazard_%d" % i
+		spinner.position = Vector3(0.0, y, 0.0)
+		spinner.set_meta("spin", 0.7 + float(i) * 0.25)
+		for j in 2:
+			var blade := _make_box(Vector3(5.5, 0.25, 0.7), Color(0.85, 0.2, 0.15, 1), true)
+			blade.position = Vector3(cos(float(j) * PI) * 3.2, 0.0, sin(float(j) * PI) * 3.2)
+			blade.rotation.y = float(j) * PI
+			var area := Area3D.new()
+			area.collision_layer = 0
+			area.collision_mask = 2
+			area.monitoring = true
+			var col := CollisionShape3D.new()
+			var shape := BoxShape3D.new()
+			shape.size = Vector3(5.5, 0.6, 0.9)
+			col.shape = shape
+			area.add_child(col)
+			blade.add_child(area)
+			area.body_entered.connect(_on_hazard)
+			spinner.add_child(blade)
+		_rings.add_child(spinner)
 
 func _style_beacon() -> void:
 	var mesh_i := _beacon.get_node_or_null("Mesh") as MeshInstance3D
@@ -213,6 +243,12 @@ func _cull_melted_ledges() -> void:
 		else:
 			keep.append(ledge)
 	_ledges = keep
+
+func _on_hazard(body: Node3D) -> void:
+	if _ended:
+		return
+	if body is SlamPlayer:
+		(body as SlamPlayer).kill("hazard")
 
 func _on_beacon(body: Node3D) -> void:
 	if _ended or not (body is SlamPlayer):

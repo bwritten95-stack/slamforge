@@ -184,6 +184,9 @@ func _forge_pad(pos: Vector3, size: float) -> void:
 		pad.call("setup", size, 4.5 + float(RunState.combo) * 0.35)
 	EventBus.forged.emit(pad.global_position, size)
 
+func kill(reason: String) -> void:
+	_die(reason)
+
 func _die(reason: String) -> void:
 	if not _alive:
 		return
