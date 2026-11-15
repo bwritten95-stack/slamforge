@@ -107,20 +107,20 @@ func _build_core_shaft() -> void:
 func _build_tower_rings() -> void:
 	for child in _rings.get_children():
 		child.queue_free()
+	_ledges.clear()
 	for i in 12:
 		var y := 3.2 + float(i) * 3.35
 		var count := 4 + (i % 4)
 		var radius := 5.2 + float(i % 3) * 1.1
+		var biome := _biome_color(i)
 		for j in count:
 			var ang := TAU * float(j) / float(count) + float(i) * 0.42
 			var size := Vector3(2.1 + float(i % 2) * 0.4, 0.38, 1.7)
-			var shade := 0.16 + float(i % 5) * 0.03
-			var ledge := _make_box(size, Color(shade, shade * 0.9, shade * 1.05, 1))
+			var ledge := _make_box(size, biome)
 			ledge.position = Vector3(cos(ang) * radius, y, sin(ang) * radius)
 			ledge.rotation.y = -ang + PI * 0.5
 			_rings.add_child(ledge)
 			_ledges.append(ledge)
-			# hanging cable hint
 			if i % 2 == 0 and j % 2 == 0:
 				var cable := MeshInstance3D.new()
 				var cmesh := BoxMesh.new()
@@ -128,14 +128,44 @@ func _build_tower_rings() -> void:
 				cable.mesh = cmesh
 				cable.position = ledge.position + Vector3(0.0, 1.2, 0.0)
 				var cmat := StandardMaterial3D.new()
-				cmat.albedo_color = Color(0.35, 0.28, 0.22, 1)
+				cmat.albedo_color = biome.darkened(0.35)
 				cable.material_override = cmat
 				_rings.add_child(cable)
+	_spawn_biome_bands()
 	var summit := _make_box(Vector3(9.0, 0.55, 9.0), Color(0.95, 0.72, 0.28, 1), true)
 	summit.position = Vector3(0.0, RunState.summit_y, 0.0)
 	_rings.add_child(summit)
 	_beacon.global_position = Vector3(0.0, RunState.summit_y + 1.4, 0.0)
 	_spawn_hazard_rings()
+
+func _biome_color(ring: int) -> Color:
+	# Lower forge iron → mid ash → upper brass
+	if ring < 4:
+		return Color(0.22, 0.16, 0.14, 1)
+	if ring < 8:
+		return Color(0.16, 0.18, 0.22, 1)
+	return Color(0.28, 0.22, 0.14, 1)
+
+func _spawn_biome_bands() -> void:
+	var bands := [
+		{"y": 8.0, "c": Color(0.7, 0.25, 0.08, 1)},
+		{"y": 22.0, "c": Color(0.25, 0.35, 0.55, 1)},
+		{"y": 34.0, "c": Color(0.75, 0.55, 0.2, 1)},
+	]
+	for b in bands:
+		var ring := MeshInstance3D.new()
+		var torus := TorusMesh.new()
+		torus.inner_radius = 9.5
+		torus.outer_radius = 10.2
+		ring.mesh = torus
+		ring.position = Vector3(0.0, float(b["y"]), 0.0)
+		var mat := StandardMaterial3D.new()
+		mat.albedo_color = b["c"] as Color
+		mat.emission_enabled = true
+		mat.emission = b["c"] as Color
+		mat.emission_energy_multiplier = 1.4
+		ring.material_override = mat
+		_rings.add_child(ring)
 
 func _spawn_hazard_rings() -> void:
 	if "--ship-test" in OS.get_cmdline_user_args():
