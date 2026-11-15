@@ -13,6 +13,7 @@ var _player: Node3D
 var _ended: bool = false
 var _hitstop: float = 0.0
 var _magma_speed: float = 0.48
+var _ledges: Array[StaticBody3D] = []
 
 func _ready() -> void:
 	RunState.reset()
@@ -60,6 +61,7 @@ func _process(delta: float) -> void:
 	if _magma:
 		_magma.global_position.y = RunState.magma_y
 	EventBus.magma_level.emit(RunState.magma_y)
+	_cull_melted_ledges()
 
 func _style_start_platform() -> void:
 	var start := $World/StartPlatform as StaticBody3D
@@ -117,6 +119,7 @@ func _build_tower_rings() -> void:
 			ledge.position = Vector3(cos(ang) * radius, y, sin(ang) * radius)
 			ledge.rotation.y = -ang + PI * 0.5
 			_rings.add_child(ledge)
+			_ledges.append(ledge)
 			# hanging cable hint
 			if i % 2 == 0 and j % 2 == 0:
 				var cable := MeshInstance3D.new()
@@ -197,6 +200,19 @@ func _make_box(size: Vector3, color: Color, emissive: bool = false) -> StaticBod
 	col.shape = shape
 	body.add_child(col)
 	return body
+
+func _cull_melted_ledges() -> void:
+	var keep: Array[StaticBody3D] = []
+	for ledge in _ledges:
+		if not is_instance_valid(ledge):
+			continue
+		if ledge.global_position.y < RunState.magma_y + 1.0:
+			var tw := create_tween()
+			tw.tween_property(ledge, "scale", Vector3(0.05, 0.05, 0.05), 0.25)
+			tw.tween_callback(ledge.queue_free)
+		else:
+			keep.append(ledge)
+	_ledges = keep
 
 func _on_beacon(body: Node3D) -> void:
 	if _ended or not (body is SlamPlayer):

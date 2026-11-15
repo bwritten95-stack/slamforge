@@ -105,9 +105,14 @@ func _physics_process(delta: float) -> void:
 	if Input.is_action_just_pressed("slam") and not is_on_floor() and not _slamming:
 		_slamming = true
 		velocity.y = -SLAM_SPEED
-		velocity.x *= 0.4
-		velocity.z *= 0.4
-		_camera.fov = _base_fov + 12.0
+		# Keep aim: slam steers toward look direction for 3D commitment
+		if direction != Vector3.ZERO:
+			velocity.x = direction.x * SPEED * 0.55
+			velocity.z = direction.z * SPEED * 0.55
+		else:
+			velocity.x *= 0.35
+			velocity.z *= 0.35
+		_camera.fov = _base_fov + 14.0
 
 	move_and_slide()
 

@@ -16,7 +16,9 @@ func _ready() -> void:
 		_height.text = "Height %.0fm  (best %.0f)" % [h, b]
 	)
 	EventBus.magma_level.connect(func(y: float) -> void:
-		_magma.text = "Magma %.0fm" % y
+		var gap := RunState.height - y
+		_magma.text = "Magma +%.0fm" % maxf(gap, 0.0)
+		_magma.modulate = Color(1, 0.45, 0.3, 1) if gap < 8.0 else Color(1, 1, 1, 1)
 	)
 	EventBus.slammed.connect(func(_p: Vector3, c: int) -> void:
 		if c >= 3:
