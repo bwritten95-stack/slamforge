@@ -37,9 +37,10 @@ func _ready() -> void:
 	tw.tween_property(_title, "modulate", Color(1.0, 0.7, 0.35, 1), 1.4)
 	tw.tween_property(_title, "modulate", Color(1.0, 0.45, 0.2, 1), 1.4)
 	var args := OS.get_cmdline_user_args()
-	if "--autoplay" in args or "--ship-test" in args:
+	if "--autoplay" in args or "--ship-test" in args or "--lose-cap" in args:
 		await get_tree().create_timer(0.6).timeout
-		await _cap("sf-menu")
+		if "--ship-test" in args or "--autoplay" in args:
+			await _cap("sf-menu")
 		get_tree().change_scene_to_file("res://scenes/arena/arena.tscn")
 
 func _dress_menu() -> void:

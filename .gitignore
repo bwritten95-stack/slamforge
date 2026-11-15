@@ -1,11 +1,8 @@
 .godot/
 *.translation
-export/*.x86_64
-export/*.exe
-export/*.pck
-export/*.zip
-export/index.*
+export/
 .DS_Store
 .env
 *_token*
 *.pem
+*.tpz

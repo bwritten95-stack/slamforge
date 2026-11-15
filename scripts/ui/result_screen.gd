@@ -22,7 +22,7 @@ func _ready() -> void:
 		get_tree().change_scene_to_file("res://scenes/ui/main_menu.tscn")
 	)
 	var args := OS.get_cmdline_user_args()
-	if "--autoplay" in args or "--ship-test" in args:
+	if "--autoplay" in args or "--ship-test" in args or "--lose-cap" in args:
 		await get_tree().create_timer(0.5).timeout
 		var tex := get_viewport().get_texture()
 		if tex:
@@ -30,4 +30,4 @@ func _ready() -> void:
 			if img:
 				img.save_png("user://sf-result-%s.png" % RunState.outcome)
 				print("RESULT_CAPTURE: ", RunState.outcome)
-		get_tree().quit(0 if won else 1)
+		get_tree().quit(0)

@@ -122,6 +122,10 @@ func _physics_process(delta: float) -> void:
 			velocity.x *= 0.35
 			velocity.z *= 0.35
 		_camera.fov = _base_fov + 14.0
+		_spawn_slam_streak()
+
+	if _slamming:
+		_mesh.scale = _mesh.scale.lerp(Vector3(0.75, 1.35, 0.75), 0.2)
 
 	move_and_slide()
 
@@ -160,6 +164,25 @@ func _impact_slam() -> void:
 	var tw := create_tween()
 	tw.tween_property(_mesh, "scale", Vector3.ONE, 0.18).set_trans(Tween.TRANS_BACK)
 	_spawn_slam_burst()
+
+func _spawn_slam_streak() -> void:
+	var streak := MeshInstance3D.new()
+	var box := BoxMesh.new()
+	box.size = Vector3(0.15, 1.4, 0.15)
+	streak.mesh = box
+	streak.position = Vector3(0.0, 0.9, 0.0)
+	var mat := StandardMaterial3D.new()
+	mat.albedo_color = Color(0.4, 0.75, 1.0, 0.7)
+	mat.emission_enabled = true
+	mat.emission = Color(0.3, 0.7, 1.0, 1)
+	mat.emission_energy_multiplier = 3.0
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	streak.material_override = mat
+	add_child(streak)
+	var tw := create_tween()
+	tw.tween_property(streak, "scale", Vector3(0.2, 2.2, 0.2), 0.18)
+	tw.parallel().tween_property(mat, "albedo_color:a", 0.0, 0.18)
+	tw.tween_callback(streak.queue_free)
 
 func _spawn_slam_burst() -> void:
 	var burst := MeshInstance3D.new()

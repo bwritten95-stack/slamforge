@@ -29,7 +29,10 @@ func _ready() -> void:
 	_style_magma()
 	_spawn_player()
 	_beacon.body_entered.connect(_on_beacon)
-	if "--autoplay" in OS.get_cmdline_user_args() or "--ship-test" in OS.get_cmdline_user_args():
+	var args := OS.get_cmdline_user_args()
+	if "--lose-cap" in args:
+		add_child(preload("res://scripts/systems/lose_cap.gd").new())
+	elif "--autoplay" in args or "--ship-test" in args:
 		add_child(preload("res://scripts/systems/ship_test.gd").new())
 
 func _spawn_player() -> void:

@@ -21,9 +21,16 @@ func setup(size: float, life: float) -> void:
 	var shape := BoxShape3D.new()
 	shape.size = Vector3(size, 0.35, size)
 	_col.shape = shape
+	var light := OmniLight3D.new()
+	light.light_color = Color(1.0, 0.45, 0.15, 1)
+	light.light_energy = 2.8
+	light.omni_range = size * 2.2
+	light.position = Vector3(0.0, 0.6, 0.0)
+	add_child(light)
 	scale = Vector3(0.2, 0.2, 0.2)
 	var tw := create_tween()
 	tw.tween_property(self, "scale", Vector3.ONE, 0.12).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tw.parallel().tween_property(light, "light_energy", 0.6, 0.45)
 
 func _process(delta: float) -> void:
 	_life -= delta

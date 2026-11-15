@@ -25,3 +25,11 @@ Menu → climb tower (forge pads + ring ledges) → dodge hazard spinners → su
 godot --path .
 godot --path . -- --ship-test
 ```
+
+## Exports
+| Target | How |
+|--------|-----|
+| Linux x86_64 | `godot --headless --path . --export-release "Linux/X11" export/Slamforge.x86_64` |
+| Web | `godot --headless --path . --export-release "Web" export/web/index.html` then serve `export/web/` over HTTP |
+
+Release builds: https://github.com/bwritten95-stack/slamforge/releases
