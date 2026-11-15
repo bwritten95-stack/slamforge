@@ -207,3 +207,6 @@ func _die(reason: String) -> void:
 
 func _on_punch(amount: float) -> void:
 	_camera.fov = _base_fov + amount * 28.0
+	_spring.spring_length = 5.4
+	var tw := create_tween()
+	tw.tween_property(_spring, "spring_length", 6.5, 0.22).set_trans(Tween.TRANS_BACK)

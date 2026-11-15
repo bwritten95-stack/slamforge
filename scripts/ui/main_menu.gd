@@ -43,23 +43,37 @@ func _ready() -> void:
 		get_tree().change_scene_to_file("res://scenes/arena/arena.tscn")
 
 func _dress_menu() -> void:
-	_bg.color = Color(0.04, 0.03, 0.05, 1)
+	_bg.color = Color(0.03, 0.02, 0.04, 1)
+	# ember columns for forge atmosphere
+	for i in 7:
+		var col := ColorRect.new()
+		col.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		col.anchor_left = 0.08 + float(i) * 0.12
+		col.anchor_right = col.anchor_left
+		col.anchor_top = 0.15
+		col.anchor_bottom = 1.0
+		col.offset_left = -18.0
+		col.offset_right = 18.0
+		col.offset_top = 0.0
+		col.offset_bottom = 0.0
+		col.color = Color(0.75, 0.2 + float(i % 3) * 0.05, 0.05, 0.08 + float(i % 2) * 0.04)
+		add_child(col)
+		move_child(col, 1)
+		var tw := create_tween().set_loops()
+		tw.tween_property(col, "modulate:a", 0.45, 0.8 + float(i) * 0.12)
+		tw.tween_property(col, "modulate:a", 1.0, 0.9 + float(i) * 0.1)
 	var glow := ColorRect.new()
 	glow.set_anchors_preset(Control.PRESET_FULL_RECT)
-	glow.color = Color(0.55, 0.12, 0.04, 0.22)
+	glow.color = Color(0.55, 0.12, 0.04, 0.18)
 	glow.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(glow)
 	move_child(glow, 1)
 	var band := ColorRect.new()
 	band.anchor_left = 0.0
 	band.anchor_right = 1.0
-	band.anchor_top = 0.62
+	band.anchor_top = 0.58
 	band.anchor_bottom = 1.0
-	band.offset_left = 0.0
-	band.offset_right = 0.0
-	band.offset_top = 0.0
-	band.offset_bottom = 0.0
-	band.color = Color(0.9, 0.25, 0.05, 0.18)
+	band.color = Color(0.95, 0.28, 0.05, 0.2)
 	band.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(band)
 	move_child(band, 2)
